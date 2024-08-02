@@ -7,39 +7,38 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/pietroBragaAquinoJunior/go-gin-gorm-crud/src/controllers"
 	"github.com/pietroBragaAquinoJunior/go-gin-gorm-crud/src/models"
+	"github.com/pietroBragaAquinoJunior/go-gin-gorm-crud/src/router"
 	"github.com/stretchr/testify/assert"
 )
 
-func TestPingRoute(t *testing.T) {
-	router := controllers.SetupRouter()
+func TestGetProductById(t *testing.T) {
+    router := router.SetupRouter()
 
-	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("GET", "/ping", nil)
-	router.ServeHTTP(w, req)
+    w := httptest.NewRecorder()
+    req, _ := http.NewRequest("GET", "/product/10", nil)
+    router.ServeHTTP(w, req)
 
-	assert.Equal(t, 200, w.Code)
-	assert.Equal(t, "pong", w.Body.String())
+    assert.Equal(t, http.StatusOK, w.Code)
+    assert.Equal(t, "10", w.Body.String())
 }
 
-// Test for POST /user/add
+
 func TestPostUser(t *testing.T) {
-	router := controllers.SetupRouter()
-	router = controllers.PostUser(router)
+    router := router.SetupRouter()
 
-	w := httptest.NewRecorder()
+    exampleProduct := models.Product{
+        Name:  "Desodorante",
+        Price: 19.90,
+    }
 
-	// Create an example user for testing
-	exampleUser := models.User{
-		Username: "test_name",
-		Gender:   "male",
-	}
-	userJson, _ := json.Marshal(exampleUser)
-	req, _ := http.NewRequest("POST", "/user/add", strings.NewReader(string(userJson)))
-	router.ServeHTTP(w, req)
+    productJson, _ := json.Marshal(exampleProduct)
+    w := httptest.NewRecorder()
+    req, _ := http.NewRequest("POST", "/product/add", strings.NewReader(string(productJson)))
+    req.Header.Set("Content-Type", "application/json")
 
-	assert.Equal(t, 200, w.Code)
-	// Compare the response body with the json data of exampleUser
-	assert.Equal(t, string(userJson), w.Body.String())
+    router.ServeHTTP(w, req)
+
+    assert.Equal(t, http.StatusCreated, w.Code)
+    assert.Equal(t, string(productJson), w.Body.String())
 }
