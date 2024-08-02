@@ -8,7 +8,6 @@ import (
 func SetupRouter() *gin.Engine {
 	r := gin.Default()
 
-	// Configura todos os endpoints
 	r.GET("/product/:id", controllers.GetProductById)
 	r.POST("/product/add", controllers.NewProduct) // Exemplo de outro endpoint
 	// r.PUT("/product/:id", controllers.UpdateProduct)

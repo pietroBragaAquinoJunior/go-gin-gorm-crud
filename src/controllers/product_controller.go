@@ -1,39 +1,36 @@
 package controllers
 
+
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/pietroBragaAquinoJunior/go-gin-gorm-crud/src/models"
-	"net/http"
+    "github.com/gin-gonic/gin"
+    "github.com/pietroBragaAquinoJunior/go-gin-gorm-crud/src/database"
+    "github.com/pietroBragaAquinoJunior/go-gin-gorm-crud/src/models"
+    "net/http"
 )
 
-// func GetProductById() *gin.Engine {
-// 	r := gin.Default()
-// 	r.GET("/product/:id", func(c *gin.Context) {
-// 		id := c.Param("id")
-// 		c.String(200, id)
-// 	})
-// 	return r
-// }
-
+// retorna o id passado por enquanto
+// TODO colocar gorm para buscar o produto pelo id
 func GetProductById(c *gin.Context) {
-	id := c.Param("id")
-	c.String(http.StatusOK, id)
+    id := c.Param("id")
+    var product models.Product
+    result := database.DB.First(&product, id)
+    if result.Error != nil {
+        c.JSON(http.StatusNotFound, gin.H{"error": "Product not found"})
+        return
+    }
+    c.JSON(http.StatusOK, product)
 }
 
-
-
-// func NewProduct(r *gin.Engine) *gin.Engine {
-// 	r.POST("/product/add", func(c *gin.Context) {
-// 		var product models.Product
-// 		c.BindJSON(&product)
-// 		c.JSON(200, product)
-// 	})
-// 	return r
-// }
-
-
-func NewProduct(c *gin.Context)  {
-	var product models.Product
-	c.BindJSON(&product)
-	c.JSON(http.StatusCreated, product)
+func NewProduct(c *gin.Context) {
+    var product models.Product
+    if err := c.BindJSON(&product); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
+        return
+    }
+    result := database.DB.Create(&product)
+    if result.Error != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create product"})
+        return
+    }
+    c.JSON(http.StatusCreated, product)
 }
