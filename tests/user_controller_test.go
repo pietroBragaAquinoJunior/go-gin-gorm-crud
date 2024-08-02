@@ -13,32 +13,31 @@ import (
 )
 
 func TestGetProductById(t *testing.T) {
-    router := router.SetupRouter()
+	router := router.SetupRouter()
 
-    w := httptest.NewRecorder()
-    req, _ := http.NewRequest("GET", "/product/10", nil)
-    router.ServeHTTP(w, req)
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("GET", "/product/10", nil)
+	router.ServeHTTP(w, req)
 
-    assert.Equal(t, http.StatusOK, w.Code)
-    assert.Equal(t, "10", w.Body.String())
+	assert.Equal(t, http.StatusOK, w.Code)
+	assert.Equal(t, "10", w.Body.String())
 }
 
-
 func TestPostUser(t *testing.T) {
-    router := router.SetupRouter()
+	router := router.SetupRouter()
 
-    exampleProduct := models.Product{
-        Name:  "Desodorante",
-        Price: 19.90,
-    }
+	exampleProduct := models.Product{
+		Name:  "Desodorante",
+		Price: 19.90,
+	}
 
-    productJson, _ := json.Marshal(exampleProduct)
-    w := httptest.NewRecorder()
-    req, _ := http.NewRequest("POST", "/product/add", strings.NewReader(string(productJson)))
-    req.Header.Set("Content-Type", "application/json")
+	productJson, _ := json.Marshal(exampleProduct)
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("POST", "/product/add", strings.NewReader(string(productJson)))
+	req.Header.Set("Content-Type", "application/json")
 
-    router.ServeHTTP(w, req)
+	router.ServeHTTP(w, req)
 
-    assert.Equal(t, http.StatusCreated, w.Code)
-    assert.Equal(t, string(productJson), w.Body.String())
+	assert.Equal(t, http.StatusCreated, w.Code)
+	assert.Equal(t, string(productJson), w.Body.String())
 }
